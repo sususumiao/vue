@@ -2,6 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '@/views/login.vue'
 import Home from '@/views/home.vue'
+import Welcome from '@/views/welcome.vue'
+import User from '@/views/users/user.vue'
 Vue.use(VueRouter)
 
 
@@ -22,7 +24,20 @@ export default new VueRouter({
         {
             name:'Home',
             path:'/home',
-            component:Home
+            component:Home,
+            redirect:{name:'Welcome'},
+            children:[
+                {
+                    name:'Welcome',
+                    path:'welcome',
+                    component:Welcome
+                },
+                {
+                    name:'User',
+                    path:'user',
+                    component:User
+                }
+            ]
         },
     ]
 })
