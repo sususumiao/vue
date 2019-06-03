@@ -46,6 +46,7 @@ export default {
                         if(result.meta.status === 200){
                             this.$message(result.meta.msg)
                             setTimeout(()=>{
+                              localStorage.setItem('itcastpro_token',result.data.token)
                                 this.$router.push({name:'Home'})
                             },100)
                         }else{
