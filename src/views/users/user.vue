@@ -39,7 +39,7 @@
               icon="el-icon-edit"
               @click="showEidtDialog(scope.row)"
             ></el-button>
-            <el-button size="mini" type="primary" plain icon="el-icon-delete"></el-button>
+            <el-button size="mini" type="primary" plain icon="el-icon-delete" @click="showDelDialog(scope.row)"></el-button>
             <el-button size="mini" type="primary" plain icon="el-icon-check"></el-button>
           </template>
         </el-table-column>
@@ -87,7 +87,7 @@
   </div>
 </template>
 <script>
-import { getUserList, addUser, eidtUser } from "@/api/index.js";
+import { getUserList, addUser, eidtUser,delUser } from "@/api/index.js";
 export default {
   data() {
     return {
@@ -181,6 +181,30 @@ export default {
           return false;
         }
       });
+    },
+    // 实现删除操作
+    showDelDialog(data){
+      this.$confirm(`此操作将永久删除id为${data.id}, 是否继续?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          delUser(data)
+          .then((result)=>{
+            if(result.meta.status === 200){
+               this.$message({ type: 'success', message: result.meta.msg });
+               this.init()
+            }else{
+              this.$message.error(result.meta.msg );
+            }
+            // console.log(result)
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
     },
     // 动态加载页面数据
     init() {

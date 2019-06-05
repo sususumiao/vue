@@ -41,3 +41,11 @@ export const eidtUser=(pa)=>{
         return result.data
     })
 }
+// 删除用户
+export const delUser=(pa)=>{
+    return axios.delete(`users/${pa.id}`)
+    .then((result)=>{
+        return result.data
+        
+    })
+}
