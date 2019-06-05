@@ -46,6 +46,20 @@ export const delUser=(pa)=>{
     return axios.delete(`users/${pa.id}`)
     .then((result)=>{
         return result.data
-        
+
+    })
+}
+// 获取角色权限
+export const getAllRoleList=()=>{
+    return axios.get('roles')
+    .then((result)=>{
+        return result.data
+    })
+}
+// 设置角色权限
+export const changeStatu=(pa)=>{
+    return axios.put(`users/${pa.id}/role`,{rid:pa.rid})
+    .then((result)=>{
+        return result.data
     })
 }

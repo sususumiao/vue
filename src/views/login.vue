@@ -43,8 +43,9 @@ export default {
                 if(valid){
                     login(this.loginForm)
                     .then((result) =>{
+                      console.log(result)
                         if(result.meta.status === 200){
-                            this.$message(result.meta.msg)
+                            // this.$message(result.meta.msg)
                             setTimeout(()=>{
                               localStorage.setItem('itcastpro_token',result.data.token)
                                 this.$router.push({name:'Home'})
