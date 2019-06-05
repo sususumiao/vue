@@ -34,3 +34,10 @@ export const addUser=(pa)=>{
         return result.data
     })
 }
+// 编辑用户
+export const eidtUser=(pa)=>{
+    return axios.put(`users/${pa.id}`,pa)
+    .then((result)=>{
+        return result.data
+    })
+}

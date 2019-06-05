@@ -24,7 +24,7 @@
         <el-table-column type="index"></el-table-column>
         <el-table-column prop="username" label="姓名" width="180"></el-table-column>
         <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
-        <el-table-column prop="create_time" label="电话"></el-table-column>
+        <el-table-column prop="mobile" label="电话"></el-table-column>
         <el-table-column label="状态" width="140">
           <template slot-scope="scope">
             <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
@@ -32,7 +32,13 @@
         </el-table-column>
         <el-table-column label="状态">
           <template slot-scope="scope">
-            <el-button size="mini" type="primary" plain icon="el-icon-edit" @click="showAddDialog"></el-button>
+            <el-button
+              size="mini"
+              type="primary"
+              plain
+              icon="el-icon-edit"
+              @click="showEidtDialog(scope.row)"
+            ></el-button>
             <el-button size="mini" type="primary" plain icon="el-icon-delete"></el-button>
             <el-button size="mini" type="primary" plain icon="el-icon-check"></el-button>
           </template>
@@ -40,7 +46,7 @@
       </el-table>
     </div>
     <!-- 添加用户区域 -->
-     <el-dialog title="添加用户" :visible.sync="addDialogFormVisible">
+    <el-dialog title="添加用户" :visible.sync="addDialogFormVisible">
       <el-form :model="addform" :rules="rules" label-width="100px" ref="addform">
         <el-form-item label="用户名" prop="username">
           <el-input v-model="addform.username"></el-input>
@@ -64,7 +70,7 @@
     <el-dialog title="添加用户" :visible.sync="editDialogFormVisible">
       <el-form :model="editForm" :rules="rules" label-width="100px" ref="editForm">
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="editForm.username"></el-input>
+          <el-input v-model="editForm.username" disabled></el-input>
         </el-form-item>
         <el-form-item label="邮箱">
           <el-input v-model="editForm.email"></el-input>
@@ -81,38 +87,38 @@
   </div>
 </template>
 <script>
-import { getUserList,addUser } from "@/api/index.js";
+import { getUserList, addUser, eidtUser } from "@/api/index.js";
 export default {
   data() {
     return {
       // 设置距离
-      formLabelWidth: '120px',
+      formLabelWidth: "120px",
       // 添加用户对话框是否显示
-      addDialogFormVisible:false,
+      addDialogFormVisible: false,
       // 编辑用户对话框是否显示
-      editDialogFormVisible:false,
+      editDialogFormVisible: false,
       // 添加用户时数据的双向数据绑定
-      addform:{
-        username:"",
-        password:"",
-        email:"",
-        mobile:""
+      addform: {
+        username: "",
+        password: "",
+        email: "",
+        mobile: ""
       },
       // 编辑用户时数据的双向绑定
-      editForm:{
-        username:"",
-        email:"",
-        mobile:""
+      editForm: {
+        username: "",
+        email: "",
+        mobile: ""
       },
       // 验证
-      rules:{
-        username:[
-           { required: true, message: '请输入用户名', trigger: 'blur' },
-            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+      rules: {
+        username: [
+          { required: true, message: "请输入用户名", trigger: "blur" },
+          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
         ],
-        password:[
-          { required: true, message: '请输入密码', trigger: 'blur' },
-            { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          { min: 6, max: 12, message: "长度在 6 到 12 个字符", trigger: "blur" }
         ]
       },
       value: true,
@@ -124,43 +130,70 @@ export default {
       }
     };
   },
-  methods:{
+  methods: {
     // 显示添加用户对话框
-    showAddDialog(){
-      this.addDialogFormVisible = true
+    showAddDialog() {
+      this.addDialogFormVisible = true;
     },
     // 实现了添加用户
-    addUserSubmit(){
-     this.$refs.addform.validate((vaild)=>{
-        if(vaild){
-          addUser(this.addform)
-          .then((result)=>{
-            if(result.meta.status === 201){
-               this.$message({ message: result.meta.msg, type: "success" })
-               this.init()
-               this.addform = {username:"", password:"", email:"", mobile:""}
-               this.addDialogFormVisible = false
-            }else{
-              this.$message.error(result.meta.msg)
+    addUserSubmit() {
+      this.$refs.addform.validate(vaild => {
+        if (vaild) {
+          addUser(this.addform).then(result => {
+            if (result.meta.status === 201) {
+              this.$message({ message: result.meta.msg, type: "success" });
+              this.init();
+              this.addform = {
+                username: "",
+                password: "",
+                email: "",
+                mobile: ""
+              };
+              this.addDialogFormVisible = false;
+            } else {
+              this.$message.error(result.meta.msg);
             }
-          })
+          });
         }
-      })
+      });
     },
     // 显示编辑用户对话框
-
+    showEidtDialog(data) {
+      this.editDialogFormVisible = true;
+      this.editForm = data;
+    },
+    // 实现编辑用户信息
+    editUserSubmit() {
+      this.$refs.editForm.validate(valid => {
+        if (valid) {
+          eidtUser(this.editForm).then(result => {
+            if (result.meta.status === 200) {
+              this.$message({ message: result.meta.msg, type: "success" });
+              this.init();
+              this.editDialogFormVisible = false;
+            } else {
+              this.$message.error(result.meta.msg);
+            }
+            // console.log(result)
+          });
+        } else {
+          this.$message.error("请输入正确的信息");
+          return false;
+        }
+      });
+    },
     // 动态加载页面数据
-    init(){
+    init() {
       getUserList(this.pa).then(result => {
-      if (result.meta.status === 200) {
-        this.userList = result.data.users;
-      }
-      // console.log(result)
-    });
+        if (result.meta.status === 200) {
+          this.userList = result.data.users;
+        }
+        // console.log(result)
+      });
     }
   },
   mounted() {
-    this.init()
+    this.init();
   }
 };
 </script>
