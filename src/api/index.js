@@ -63,3 +63,10 @@ export const changeStatu=(pa)=>{
         return result.data
     })
 }
+// 设置开关操作
+export const changeuserstate=(pa)=>{
+    return axios.put(`users/${pa.id}/state/${pa.mg_state}`)
+    .then((result)=>{
+        return result.data
+    })
+}

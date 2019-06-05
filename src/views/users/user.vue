@@ -13,8 +13,9 @@
         v-model="pa.query"
         class="input-with-select"
         style="width:300px"
+        @keydown.native.enter="searchUserList"
       >
-        <el-button slot="append" icon="el-icon-search"></el-button>
+        <el-button slot="append" icon="el-icon-search" @click="searchUserList"></el-button>
       </el-input>
       <el-button type="success" plain style="margin-left:10px" @click="showAddDialog">添加用户</el-button>
     </div>
@@ -27,7 +28,7 @@
         <el-table-column prop="mobile" label="电话"></el-table-column>
         <el-table-column label="状态" width="140">
           <template slot-scope="scope">
-            <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+            <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949" @change="changeUserState(scope.row)"></el-switch>
           </template>
         </el-table-column>
         <el-table-column label="状态">
@@ -121,7 +122,7 @@
   </div>
 </template>
 <script>
-import { getUserList, addUser, eidtUser, delUser,getAllRoleList,changeStatu } from "@/api/index.js";
+import { getUserList, addUser, eidtUser, delUser,getAllRoleList,changeStatu,changeuserstate } from "@/api/index.js";
 export default {
   data() {
     return {
@@ -277,6 +278,23 @@ export default {
            this.$message.error(result.meta.msg);
         }
       })
+    },
+    // 实现操作开关
+    changeUserState(data){
+      // console.log(data)
+      changeuserstate(data)
+      .then((result)=>{
+        if(result.meta.status === 200){
+          this.$message({ message: result.meta.msg, type: "success" });
+        }else{
+          this.$message.error(result.meta.msg);
+        }
+        // console.log(result)
+      })
+    },
+    // 实现搜索功能
+    searchUserList(){
+      this.init()
     },
     // 动态加载页面数据
     init() {
