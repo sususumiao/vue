@@ -14,6 +14,8 @@
         class="input-with-select"
         style="width:300px"
         @keydown.native.enter="searchUserList"
+        clearable
+        @clear="searchUserList"
       >
         <el-button slot="append" icon="el-icon-search" @click="searchUserList"></el-button>
       </el-input>
@@ -63,6 +65,18 @@
           </template>
         </el-table-column>
       </el-table>
+    </div>
+    <!-- 分页器区域 -->
+    <div>
+      <el-pagination
+       @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pa.pagenum"
+      :page-sizes="[10, 20, 30, 40]"
+      :page-size="pa.pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
     </div>
     <!-- 添加用户区域 -->
     <el-dialog title="添加用户" :visible.sync="addDialogFormVisible">
@@ -126,6 +140,7 @@ import { getUserList, addUser, eidtUser, delUser,getAllRoleList,changeStatu,chan
 export default {
   data() {
     return {
+      total:0,
        roleList: [],
       // 设置距离
       formLabelWidth: "120px",
@@ -170,7 +185,8 @@ export default {
       pa: {
         query: "",
         pagenum: 1,
-        pagesize: 10
+        pagesize: 10,
+        total:0
       }
     };
   },
@@ -259,6 +275,7 @@ export default {
       this.grantRoleDialogFormVisible = true
       this.grantRoleForm.name=data.username
       this.grantRoleForm.id = data.id
+      this.grantRoleForm.rid = data.rid
       // console.log(data)
     },
     // 选择权限时
@@ -274,6 +291,7 @@ export default {
         if(result.meta.status === 200){
            this.$message({ message: result.meta.msg, type: "success" });
            this.grantRoleDialogFormVisible  = false
+           this.init()
         }else{
            this.$message.error(result.meta.msg);
         }
@@ -296,11 +314,24 @@ export default {
     searchUserList(){
       this.init()
     },
+    // 分页
+    handleSizeChange(val) {
+        // console.log(`每页 ${val} 条`);
+        this.pa.pagesize = val
+        this.init()
+      },
+      handleCurrentChange(val) {
+        // console.log(`当前页: ${val}`);
+        this.pa.pagenum = val
+        this.init()
+      },
     // 动态加载页面数据
     init() {
       getUserList(this.pa).then(result => {
         if (result.meta.status === 200) {
-          this.userList = result.data.users;
+          // console.log(result)
+          this.userList = result.data.users
+          this.total = result.data.total
         }
         // console.log(result)
       });
